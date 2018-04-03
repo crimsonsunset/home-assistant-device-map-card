@@ -1,0 +1,1 @@
+# home-assistant-device-map-card
