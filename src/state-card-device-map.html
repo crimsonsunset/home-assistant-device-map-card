@@ -1,6 +1,10 @@
 <!--<link rel="import" href="../polymer/polymer-element.html">-->
 <!--<link rel="import" href="../iron-icon/iron-icon.html">-->
 
+<!--todo: whats this? comment back in?-->
+<!--<script src="index.js"></script>-->
+
+
 <dom-module id="state-card-device-map">
 
   <template>
@@ -8,10 +12,14 @@
     <style>
       /* shadow DOM styles go here */
       /*:host {*/
-        /*display: inline-block;*/
+      /*display: inline-block;*/
       /*}*/
 
       #map_wrapper {
+        height: 400px;
+      }
+
+      .map_wrapper {
         height: 400px;
       }
 
@@ -19,24 +27,35 @@
         width: 100%;
         height: 100%;
       }
+
+      #joe {
+        height: 400px;
+        border: 1px solid red;
+      }
+
     </style>
 
     <!-- shadow DOM goes here -->
-    
 
-    <div id="map_wrapper">
-      <div id="map_canvas" class="mapping"></div>
-    </div>
+
+    <!--<div id="map_wrapper">-->
+    <!--<div id="map_canvas" class="mapping"></div>-->
+    <!--</div>-->
+
+    <!--<pre>-->
+    <!--<div id="map_canvas" style="height:200px"></div>-->
+    <!--<pre>-->
+    <pre><div id="map_canvas" style="height:200px"></div></pre>
+
+    <div id="test"></div>
+    <!--<div id="joe"></div>-->
+
 
   </template>
 
   <script>
 
-    document.addEventListener("DOMContentLoaded", function() {
-      let script = document.createElement('script');
-      script.src = "//maps.googleapis.com/maps/api/js?sensor=false&callback=initialize";
-      document.body.appendChild(script);
-    });
+    
     function initialize() {
       var map;
       var bounds = new google.maps.LatLngBounds();
@@ -45,20 +64,37 @@
       };
 
       // Display a map on the page
-      map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+      console.log('hewww')
+      var div = document.createElement("div");
+      div.id = 'joe'
+
+      div.className = 'map_wrapper'
+      div.style = {};
+
+      div.style.height = '400px'
+      document.body.appendChild(div);
+      let z = document.getElementById('test')
+
+
+      var map = new google.maps.Map(div,
+        mapOptions);
+
+
+      //          map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
       map.setTilt(45);
 
       // Multiple Markers
       var markers = [
-        ['London Eye, London', 51.503454,-0.119562],
-        ['Palace of Westminster, London', 51.499633,-0.124755]
+        ['London Eye, London', 51.503454, -0.119562],
+        ['Palace of Westminster, London', 51.499633, -0.124755]
       ];
 
       // Info Window Content
       var infoWindowContent = [
         ['<div class="info_content">' +
         '<h3>London Eye</h3>' +
-        '<p>The London Eye is a giant Ferris wheel situated on the banks of the River Thames. The entire structure is 135 metres (443 ft) tall and the wheel has a diameter of 120 metres (394 ft).</p>' +        '</div>'],
+        '<p>The London Eye is a giant Ferris wheel situated on the banks of the River Thames. The entire structure is 135 metres (443 ft) tall and the wheel has a diameter of 120 metres (394 ft).</p>' + '</div>'],
         ['<div class="info_content">' +
         '<h3>Palace of Westminster</h3>' +
         '<p>The Palace of Westminster is the meeting place of the House of Commons and the House of Lords, the two houses of the Parliament of the United Kingdom. Commonly known as the Houses of Parliament after its tenants.</p>' +
@@ -69,7 +105,7 @@
       var infoWindow = new google.maps.InfoWindow(), marker, i;
 
       // Loop through our array of markers & place each one on the map
-      for( i = 0; i < markers.length; i++ ) {
+      for (i = 0; i < markers.length; i++) {
         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
         bounds.extend(position);
         marker = new google.maps.Marker({
@@ -79,8 +115,8 @@
         });
 
         // Allow each marker to have an info window
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
-          return function() {
+        google.maps.event.addListener(marker, 'click', (function (marker, i) {
+          return function () {
             infoWindow.setContent(infoWindowContent[i][0]);
             infoWindow.open(map, marker);
           }
@@ -91,22 +127,43 @@
       }
 
       // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
-      var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+      var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function (event) {
         this.setZoom(14);
         google.maps.event.removeListener(boundsListener);
       });
 
     }
 
+    //    window.initMap = initialize;
+
+
+    function loadScript(src, callback) {
+
+      let script = document.createElement("script");
+      script.type = "text/javascript";
+      if (callback) script.onload = callback;
+      document.getElementsByTagName("head")[0].appendChild(script);
+      script.src = src;
+    }
+
+    window.initMap = initialize;
+    //    loadScript('http://maps.googleapis.com/maps/api/js?v=3&callback=window.initMap',
+    //      function () {console.log('google-loader has been loaded, but not the maps-API ');});
+
+    loadScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyBOZIpoz5xoej33mSOPYCjrqTxgTpZipc0&callback=window.initMap',
+      function () {console.log('google-loader has been loaded, but not the maps-API ');});
+
 
     class StateCardDeviceMap extends Polymer.Element {
       static get is() {
         return 'state-card-device-map';
       }
+
       constructor() {
         super();
       }
     }
+
     customElements.define(StateCardDeviceMap.is, StateCardDeviceMap);
   </script>
 
